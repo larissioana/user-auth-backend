@@ -5,7 +5,7 @@ import User from '../models/User.js';
 
 export const signup = async (req, res) => {
     const { name, email, password } = req.body;
-    // Email validation regex
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     try {
         if (!emailRegex.test(email)) {
@@ -21,7 +21,6 @@ export const signup = async (req, res) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        //Create user
         const user = new User({ name, email, password: hashedPassword });
         await user.save();
         res.status(201).json({ message: "User created successfully" })
@@ -38,7 +37,7 @@ export const signin = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-        //Jwt token
+
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
         res.json({ token });
     } catch (error) {
